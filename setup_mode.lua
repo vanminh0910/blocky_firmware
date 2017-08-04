@@ -43,8 +43,10 @@ function parseRequestArgs(args)
 
   wifi.sta.config({['ssid']=ssid, ['pwd']=password, ['save']=true}) 
 
-  file.open('authkey', 'w')
-  file.writeline(authKey)
+  local configJson = sjson.encode({ssid=ssid, password=password, authKey=authKey})
+
+  file.open('config', 'w')
+  file.writeline(configJson)
   file.flush()
   file.close()
   return true
@@ -64,11 +66,7 @@ srv:listen(80, function(conn)
         responseBytes = -1
         return
     end
-    --print(payload)
     _, _, method, url, vars = string.find(payload, '([A-Z]+) /([^?]*)%??(.*) HTTP')
-
-    print ('url: ' .. url)
-    print ('vars: ' .. vars)
 
     if (url == '') then
       -- Only support one sending one file
@@ -79,8 +77,9 @@ srv:listen(80, function(conn)
     elseif (url == 'set') then
       -- Check if wifi-credentials have been supplied
       if parseRequestArgs(vars) then
-          print('Saved config. Now restart.')
-          node.restart()
+        conn:send('HTTP/1.1 200 OK\r\n\r\nConfig saved. Now rebooting...')
+        print('Saved config. Now restart.')
+        tmr.create():alarm(2000, tmr.ALARM_SINGLE, function (t) node.restart() end)
       end
       return
     elseif (url == 'aplist') then
@@ -132,6 +131,6 @@ srv:listen(80, function(conn)
     conn:close() 
   end)
 end)
-print('Setup mode is started. Setup page can be accessed via url: http://192.168.4.1/')
+print('Setup mode is started and can be accessed via url: http://192.168.4.1/')
 
 
