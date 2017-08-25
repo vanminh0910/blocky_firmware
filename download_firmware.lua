@@ -28,7 +28,7 @@ function downloadFile(fileName, host, port, url, callback)
   payLoadSize = 0
   payloadWritten = 0
   
-  tlsConn = tls.createConnection() --net.createConnection(net.TCP, 1) --tls.createConnection() 
+  tlsConn = net.createConnection(net.TCP, 1) --tls.createConnection() 
 
   local connTimeOutTimer = tmr.create()
   local readTimeOutTimer = tmr.create()
@@ -96,7 +96,7 @@ function downloadFile(fileName, host, port, url, callback)
     
   --print ('Connecting to host: ' .. host .. ' on port ' .. port)
   tlsConn:connect(port, host)
-  connTimeOutTimer:register(5000, tmr.ALARM_SINGLE, function (t)
+  connTimeOutTimer:register(10000, tmr.ALARM_SINGLE, function (t)
       print('Connection timeout. Cancel firmware downloading.')
       t:unregister()
       conn = nil
