@@ -43,10 +43,8 @@ function parseRequestArgs(args)
 
   wifi.sta.config({['ssid']=ssid, ['pwd']=password, ['save']=true}) 
 
-  local configJson = sjson.encode({ssid=ssid, password=password, authKey=authKey})
-
   file.open('config', 'w')
-  file.writeline(configJson)
+  file.writeline(authKey)
   file.flush()
   file.close()
   return true
