@@ -3,7 +3,7 @@ local fileToDownload = {
     fileName = 'init.lua', 
     host = 'raw.githubusercontent.com', 
     port = 443, 
-    url = 'vanminh0910/blocky_firmware/master/init_test.lua'
+    url = 'vanminh0910/blocky_firmware/master/init.lua'
   }, {
     fileName = 'setup_mode.lua', 
     host = 'raw.githubusercontent.com', 

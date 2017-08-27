@@ -38,7 +38,7 @@ function M.init(authKey, onConnected, onDisconnected)
     else
       --for key,value in pairs(message_handlers) do print(key,value) end
       if (M.messageHandlers[topic] ~= nil) then
-        pcall(M.message_handlers[topic](topic, data))
+        pcall(function() M.messageHandlers[topic](topic, data) end)
       end
     end      
   end)
