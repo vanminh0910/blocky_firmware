@@ -76,7 +76,7 @@ srv:listen(80, function(conn)
       -- Check if wifi-credentials have been supplied
       if parseRequestArgs(vars) then
         conn:send('HTTP/1.1 200 OK\r\n\r\nConfig saved. Now rebooting...')
-        print('Saved config. Now restart.')
+        print('<h1>Saved config. Now restart.</h1>')
         tmr.create():alarm(2000, tmr.ALARM_SINGLE, function (t) node.restart() end)
       end
       return

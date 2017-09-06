@@ -13,9 +13,10 @@ gpio.mode(4, gpio.OUTPUT)
 gpio.write(4, gpio.HIGH)
 
 gpio.mode(3, gpio.INT)
+gpio.trig(3, 'none', function() end)
 gpio.trig(3, 'down', function(level)
-    gpio.trig(3, 'none', function() end)
-    enterSetupMode()
+  gpio.trig(3, 'none', function() end)
+  enterSetupMode()
 end)
 
 function startConnectingBlink()
@@ -37,6 +38,9 @@ function onBlockyConnected()
 end
 
 function onBlockyDisConnected()
+  if connectBlinkTimer ~= nil then
+    tmr.unregister(connectBlinkTimer)
+  end
   startConnectingBlink()
   reconnectTimer = tmr.create()
   reconnectTimer:alarm(10000, tmr.ALARM_AUTO, function (t)
@@ -46,7 +50,7 @@ end
 
 -- check if boot to setup mode is triggered
 if file.exists('boot_setup_mode') or not file.exists('config') then
-  print('Enter setup mode')
+  print('Boot setup mode file found. Now enter setup mode')
   file.remove('boot_setup_mode')
   dofile('setup_mode.lua')
 else
@@ -54,7 +58,8 @@ else
   local authKey = ''
   if not pcall(function() 
     file.open('config', 'r')
-    authKey = string.match(file.read('\n'), "^%s*(.-)%s*$")    
+    authKey = string.match(file.read('\n'), "^%s*(.-)%s*$")  
+    print('Found auth key: ' .. authKey)  
     file.close()
   end) or authKey == nil or authKey == '' then
     print('No authentication key found. Enter setup mode')
@@ -72,7 +77,7 @@ else
     startConnectingBlink()
     
     connectBlockyTimer = tmr.create()
-    connectBlockyTimer:alarm(20000, tmr.ALARM_SINGLE, function (t)
+    connectBlockyTimer:alarm(60000, tmr.ALARM_SINGLE, function (t)
       --boot to setup mode
       print('Fail to connect to broker')
       enterSetupMode()
