@@ -40,8 +40,11 @@ function M.init(authKey, onConnected, onDisconnected)
         node.compile("main.lua")
         file.remove('main.lua')
         print('OTA completed. Rebooting now...')
-        M.mqtt:publish(M.getSystemTopic('ota/ack'), '', 0, 0)
-        node.restart()
+        M.mqtt:publish(M.getSystemTopic('ota_ack'), 'OTA completed', 0, 0, function()
+          print('Published OTA ack')
+          node.restart()
+        end)
+        
       elseif systemTopic == 'reboot' then
         print('Received reboot request')
         node.restart()
@@ -66,8 +69,9 @@ function M.init(authKey, onConnected, onDisconnected)
           file.rename('main_temp.lc', 'main.lc')
           file.remove('main_temp.lua')
           file.remove('main_temp.lc')
-          M.mqtt:publish(M.getSystemTopic('ota/ack'), '', 0, 0)
-          node.restart()
+          M.mqtt:publish(M.getSystemTopic('ota_ack'), 'OTA completed', 0, 0, function()
+            node.restart()
+          end)
         end
       end    
     else
