@@ -103,6 +103,7 @@ function M.connect()
     M.mqtt:subscribe(M.getSystemTopic('reboot'), 0, function()
       M.onConnected()
       if (M.status == 0) then
+        M.status = 1
         print('Now run main user code')
         pcall(function() dofile('main.lc') end)
       end
