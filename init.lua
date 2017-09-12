@@ -12,12 +12,28 @@ statusLedOn = 0
 gpio.mode(4, gpio.OUTPUT)
 gpio.write(4, gpio.HIGH)
 
-gpio.mode(3, gpio.INT)
-gpio.trig(3, 'none', function() end)
-gpio.trig(3, 'down', function(level)
-  gpio.trig(3, 'none', function() end)
-  enterSetupMode()
-end)
+--gpio.mode(3, gpio.INT)
+--gpio.trig(3, 'none', function() end)
+--gpio.trig(3, 'down', function(level)
+--  gpio.trig(3, 'none', function() end)
+--  enterSetupMode()
+--end)
+
+do
+  -- pin 3 is connected to config mode button
+  local pin, pulse1, duration, now = 3, 0, 0, tmr.now
+  gpio.mode(pin,gpio.INT)
+  local function configBtnCb(level, pulse2)
+    duration = pulse2 - pulse1
+    print(level, duration)
+    if level == gpio.HIGH and duration > 1500000 then
+      enterSetupMode()
+    end
+    pulse1 = pulse2
+    gpio.trig(pin, level == gpio.HIGH  and "down" or "up")
+  end
+  gpio.trig(pin, "down", configBtnCb)
+end
 
 function startConnectingBlink()
   connectBlinkTimer = tmr.create()
