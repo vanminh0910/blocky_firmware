@@ -7,6 +7,14 @@ wifi.ap.config(cfg)
 
 print('Opening setup mode portal')
 
+local rebootExpiry = 300000
+
+rebootTimer = tmr.create()
+rebootTimer:alarm(rebootExpiry, tmr.ALARM_SINGLE, function (t)
+  print('No activity found in setup mode. Restarting...')
+  node.restart()
+end)
+
 function parseRequestArgs(args)
   if args == nil or args == '' then
     return false
@@ -58,6 +66,14 @@ srv:listen(80, function(conn)
   local vars=''
 
   conn:on('receive',function(conn, payload)
+    if rebootTimer ~= nil then
+      tmr.unregister(rebootTimer)
+    end    
+    reconnectTimer = tmr.create()
+    reconnectTimer:alarm(rebootExpiry, tmr.ALARM_SINGLE, function (t)
+      node.restart()
+    end)
+
     if string.len(payload) > 2000 then
         print('payload is too big')
         conn:send('HTTP/1.1 404 file not found')
@@ -112,20 +128,18 @@ srv:listen(80, function(conn)
   conn:on('sent',function(conn) 
     if responseBytes >= 0 and method == 'GET' then
       if file.open(url, 'r') then            
-          file.seek('set', responseBytes)
-          local line = file.read(512)
-          file.close()
-          if line then
-              conn:send(line)
-              responseBytes = responseBytes + 512    
-
-              if (string.len(line)==512) then
-                  return
-              end
+        file.seek('set', responseBytes)
+        local line = file.read(512)
+        file.close()
+        if line then
+          conn:send(line)
+          responseBytes = responseBytes + 512
+          if (string.len(line)==512) then
+              return
           end
+        end
       end        
     end
-
     conn:close() 
   end)
 end)

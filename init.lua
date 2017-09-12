@@ -12,13 +12,6 @@ statusLedOn = 0
 gpio.mode(4, gpio.OUTPUT)
 gpio.write(4, gpio.HIGH)
 
---gpio.mode(3, gpio.INT)
---gpio.trig(3, 'none', function() end)
---gpio.trig(3, 'down', function(level)
---  gpio.trig(3, 'none', function() end)
---  enterSetupMode()
---end)
-
 do
   -- pin 3 is connected to config mode button
   local pin, pulse1, duration, now = 3, 0, 0, tmr.now
