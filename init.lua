@@ -81,6 +81,7 @@ else
     wifi.eventmon.register(wifi.eventmon.STA_GOT_IP, function(T)
       print("\n\tWIFI - GOT IP: " .. T.IP)
       blocky.connect()
+	  sntp.sync()
     end)
 
     startConnectingBlink()

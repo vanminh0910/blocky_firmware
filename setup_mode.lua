@@ -7,7 +7,7 @@ wifi.ap.config(cfg)
 
 print('Opening setup mode portal')
 
-local rebootExpiry = 300000
+local rebootExpiry = 180000
 
 rebootTimer = tmr.create()
 rebootTimer:alarm(rebootExpiry, tmr.ALARM_SINGLE, function (t)
