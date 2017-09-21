@@ -18,8 +18,7 @@ do
   gpio.mode(pin,gpio.INT)
   local function configBtnCb(level, pulse2)
     duration = pulse2 - pulse1
-    print(level, duration)
-    if level == gpio.HIGH and duration > 1500000 then
+    if level == gpio.HIGH and duration > 1000000 then
       enterSetupMode()
     end
     pulse1 = pulse2

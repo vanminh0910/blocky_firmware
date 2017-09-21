@@ -15,6 +15,23 @@ rebootTimer:alarm(rebootExpiry, tmr.ALARM_SINGLE, function (t)
   node.restart()
 end)
 
+-- factory reset if config button pushed longer than 3 seconds
+do
+  -- pin 3 is connected to config mode button
+  local pin, pulse1, duration, now = 3, 0, 0, tmr.now
+  gpio.mode(pin,gpio.INT)
+  local function configBtnCb(level, pulse2)
+    duration = pulse2 - pulse1
+    if level == gpio.HIGH and duration > 3000000 then
+      print('Factory reset in progress')
+	  node.restart()
+    end
+    pulse1 = pulse2
+    gpio.trig(pin, level == gpio.HIGH  and "down" or "up")
+  end
+  gpio.trig(pin, "down", configBtnCb)
+end
+
 function parseRequestArgs(args)
   if args == nil or args == '' then
     return false
@@ -86,7 +103,7 @@ srv:listen(80, function(conn)
       -- Only support one sending one file
       url='index.html'
       responseBytes = 0
-      conn:send('HTTP/1.1 200 OK\r\n\r\n')
+	  conn:send('HTTP/1.1 200 OK\r\n\Access-Control-Allow-Headers: Content-Type\r\nAccess-Control-Allow-Methods: GET, POST, OPTIONS\r\nAllow-Control-Allow-Origin: *\r\n\Content-type: text/html\r\n\r\n')
       return
     elseif (url == 'set') then
       -- Check if wifi-credentials have been supplied
@@ -107,7 +124,7 @@ srv:listen(80, function(conn)
           table.insert(accessPointsList, ap)            
         end
         responseBytes = -1
-        conn:send('HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n')
+        conn:send('HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nAccess-Control-Allow-Headers: Content-Type\r\nAccess-Control-Allow-Methods: GET, POST, OPTIONS\r\nAccess-Control-Allow-Origin: *\r\n\r\n')
         conn:send(sjson.encode(accessPointsList))
         conn:send('\r\n\r\n')
         conn:close()
