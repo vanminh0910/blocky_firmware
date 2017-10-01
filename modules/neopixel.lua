@@ -49,9 +49,6 @@ end
 
 function M.setColor(pixel, colorHex)
   local colorRGB = M.hex2rgb(colorHex)
-  print(colorRGB[1])
-  print(colorRGB[2])
-  print(colorRGB[3])
   i2c.setup(0, 2, 1, i2c.SLOW)
   i2c.start(0)
   i2c.address(0, 0x15, i2c.TRANSMITTER)
