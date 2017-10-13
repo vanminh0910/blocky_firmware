@@ -20,29 +20,12 @@ do
   gpio.trig(pin, "down", configBtnCb)
 end
 
-function startConnectingBlink()
-  connectBlinkTimer = tmr.create()
-  connectBlinkTimer:alarm(300, tmr.ALARM_AUTO, function (t)
-    if (statusLedOn == 1) then gpio.write(4, gpio.LOW) else gpio.write(4, gpio.HIGH) end
-    statusLedOn = 1 - statusLedOn
-  end)
-end
-
 function onBlockyConnected()
   dofile('on_blocky_connected.lua')
 end
 
 function onBlockyDisConnected()
-  if connectBlinkTimer ~= nil then
-    tmr.unregister(connectBlinkTimer)
-    connectBlinkTimer = nil
-    collectgarbage()
-  end
-  startConnectingBlink()
-  reconnectTimer = tmr.create()
-  reconnectTimer:alarm(10000, tmr.ALARM_AUTO, function (t)
-    blocky.connect()
-  end)
+  dofile('on_blocky_disconnected.lua')
 end
 
 -- check if boot to setup mode is triggered
@@ -77,7 +60,12 @@ else
       blocky.connect()
     end)
 
-    startConnectingBlink()
+    -- start connecting blink
+    connectBlinkTimer = tmr.create()
+    connectBlinkTimer:alarm(300, tmr.ALARM_AUTO, function (t)
+      if (statusLedOn == 1) then gpio.write(4, gpio.LOW) else gpio.write(4, gpio.HIGH) end
+      statusLedOn = 1 - statusLedOn
+    end)
     
     connectBlockyTimer = tmr.create()
     connectBlockyTimer:alarm(40000, tmr.ALARM_SINGLE, function (t)
