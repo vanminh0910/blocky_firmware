@@ -22,7 +22,7 @@ function MPR121:setThresholds(touch, release)
 end
 function MPR121:begin(_trig_pin)
 	i2c.setup(0, 2, 1, i2c.SLOW)
-    MPR121:writeRegister(codes.MPR121_SOFTRESET, 0x63)
+    MPR121:writeRegister(0x80, 0x63)
     tmr.delay(1000)
     MPR121:writeRegister(0x5E, 0x0)
     --local c =readRegister(codes.MPR121_CONFIG2, 1)
