@@ -201,7 +201,7 @@ function M.log(data)
     print('Cannot send message as not connected to broker')
     return
   end
-  M.mqtt:publish(getTopic('', true), '{"event":"log", "chipId":"' .. node.chipid() .. '","data":"' .. data .. '"}', 0, 0)
+  M.mqtt:publish(getTopic(node.chipid()..'/log', true), data, 0, 0)
 end
 
 function M.unsubscribe(topic)
