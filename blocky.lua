@@ -1,6 +1,6 @@
 local M, module = {}, ...
 
-M.brokerHost = 'staging.broker.blocky.easytech.vn'
+M.brokerHost = 'broker.getblocky.com'
 M.brokerPort = 1883
 
 M.status = 0 -- 0: initial, not connected   1: connected  2: error/offline

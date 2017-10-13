@@ -1,16 +1,9 @@
 -------------------------------- main code starts here -----------------------
-function enterSetupMode()
-  print('Config mode triggered. Reboot to config mode now')
-  file.open('boot_setup_mode', 'w')
-  file.writeline('')
-  file.flush()   
-  file.close()
-  node.restart()
-end
-
 statusLedOn = 0
 gpio.mode(4, gpio.OUTPUT)
 gpio.write(4, gpio.HIGH)
+
+wifi.setmode(wifi.STATION)
 
 do
   -- pin 3 is connected to config mode button
@@ -19,7 +12,7 @@ do
   local function configBtnCb(level, pulse2)
     duration = pulse2 - pulse1
     if level == gpio.HIGH and duration > 1000000 then
-      enterSetupMode()
+      dofile('trigger_setup_mode.lua')
     end
     pulse1 = pulse2
     gpio.trig(pin, level == gpio.HIGH  and "down" or "up")
@@ -36,18 +29,14 @@ function startConnectingBlink()
 end
 
 function onBlockyConnected()
-  tmr.unregister(connectBlockyTimer)
-  tmr.unregister(connectBlinkTimer)
-  if reconnectTimer ~= nil then
-    tmr.unregister(reconnectTimer)
-    reconnectTimer = nil
-  end
-  gpio.write(4, gpio.HIGH)
+  dofile('on_blocky_connected.lua')
 end
 
 function onBlockyDisConnected()
   if connectBlinkTimer ~= nil then
     tmr.unregister(connectBlinkTimer)
+    connectBlinkTimer = nil
+    collectgarbage()
   end
   startConnectingBlink()
   reconnectTimer = tmr.create()
@@ -65,35 +54,41 @@ if file.exists('boot_setup_mode') or not file.exists('config') then
 else
   -- load authentication key
   local authKey = ''
+  local deviceName = ''
   if not pcall(function() 
     file.open('config', 'r')
-    authKey = string.match(file.read('\n'), "^%s*(.-)%s*$")  
-    print('Found auth key: ' .. authKey)  
+    authKey = string.match(file.read('\n'), "^%s*(.-)%s*$")
+    deviceName = string.match(file.read('\n'), "^%s*(.-)%s*$")
+    if deviceName == nil or deviceName == '' then
+        deviceName = 'blocky_' .. node.chipid()
+    end
+    print('Found auth key and device name: ' .. authKey .. ' ' .. deviceName)
     file.close()
   end) or authKey == nil or authKey == '' then
     print('No authentication key found. Enter setup mode')
     dofile('setup_mode.lua')
   else
     blocky = require('blocky')
-    blocky.init(authKey, onBlockyConnected, onBlockyDisConnected)
+    blocky.init({authKey=authKey, deviceName=deviceName}, onBlockyConnected, onBlockyDisConnected)
     authKey = nil
     
     wifi.eventmon.register(wifi.eventmon.STA_GOT_IP, function(T)
       print("\n\tWIFI - GOT IP: " .. T.IP)
       blocky.connect()
-	  --sntp.sync()
     end)
 
     startConnectingBlink()
     
     connectBlockyTimer = tmr.create()
-    connectBlockyTimer:alarm(60000, tmr.ALARM_SINGLE, function (t)
+    connectBlockyTimer:alarm(40000, tmr.ALARM_SINGLE, function (t)
       --boot to setup mode
       print('Fail to connect to broker')
-      enterSetupMode()
+      dofile('trigger_setup_mode.lua')
     end)
   end
 end
+
+collectgarbage()
 
 
 

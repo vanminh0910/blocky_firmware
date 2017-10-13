@@ -1,11 +1,18 @@
 gpio.mode(4, gpio.OUTPUT)
 gpio.write(4, gpio.LOW)
+if file.exists('config') then
+  file.open('config', 'r')
+  authKey = string.match(file.read('\n'), "^%s*(.-)%s*$")
+  deviceName = string.match(file.read('\n'), "^%s*(.-)%s*$")
+  file.close()
+end
+if deviceName == nil or deviceName == '' then
+  deviceName = 'blocky_' .. node.chipid()
+end
+print('Device name in setup mode: ' .. deviceName)
 wifi.setmode(wifi.STATIONAP)
-local cfg={}
-cfg.ssid='BLOCKY_'..node.chipid()
+local cfg={ssid=deviceName, pwd='12345678'}
 wifi.ap.config(cfg)
-
-print('Opening setup mode portal')
 
 local rebootExpiry = 600000
 
@@ -37,9 +44,12 @@ function parseRequestArgs(args)
     return false
   end
 
-  ssid, password, authKey = string.match(args, 'ssid\=([^&?]*)&password\=([^&?]*)&authKey\=([^&?]*)')
+  ssid, password, authKey, deviceName = string.match(args, 'ssid\=([^&?]*)&password\=([^&?]*)&authKey\=([^&?]*)&deviceName\=([^&?]*)')
   
   local function unescape (str)
+    if str == '' or str == nil then
+      return str
+    end
     str = string.gsub (str, "+", " ")
     str = string.gsub (str, "%%(%x%x)", function(h) return string.char(tonumber(h,16)) end)
     str = string.gsub (str, "\r\n", "\n")
@@ -49,6 +59,11 @@ function parseRequestArgs(args)
   ssid = unescape(ssid)
   password = unescape(password)
   authKey = unescape(authKey)
+  deviceName = unescape(deviceName)
+
+  if deviceName == nil or deviceName == '' then
+    deviceName = 'blocky_' .. node.chipid()
+  end
 
   if ssid == nil or ssid == '' or password == nil or authKey == nil or authKey == '' then
     return false
@@ -65,11 +80,13 @@ function parseRequestArgs(args)
   print('wifi_ssid     : ' .. ssid)
   print('wifi_password : ' .. password)
   print('auth_key : ' .. authKey)
+  print('device name : ' .. deviceName)
 
   wifi.sta.config({['ssid']=ssid, ['pwd']=password, ['save']=true}) 
 
   file.open('config', 'w')
   file.writeline(authKey)
+  file.writeline(deviceName)
   file.flush()
   file.close()
   return true
