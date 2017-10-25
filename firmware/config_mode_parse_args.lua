@@ -49,6 +49,6 @@ return function (args)
 
   blocky.config.authKey = authKey
   blocky.config.deviceName = deviceName
-  require('util_save_config.lua')()
+  require('util_save_config')()
   return true
 end
