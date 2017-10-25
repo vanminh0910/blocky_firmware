@@ -1,6 +1,0 @@
-print('Config mode triggered. Reboot to config mode now')
-file.open('boot_setup_mode', 'w')
-file.writeline('')
-file.flush()   
-file.close()
-node.restart()
