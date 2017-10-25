@@ -95,7 +95,7 @@ return function (conn, topic, data)
 			else
 				blocky.config.deviceName = data
 				require('util_save_config')()
-			end        
+			end     
 		elseif topic == require('util_get_topic')(node.chipid()..'/reboot', true) then
 			print('Received reboot request')
 			node.restart()
@@ -103,7 +103,7 @@ return function (conn, topic, data)
 			print('Received upload request')
 		elseif topic == require('util_get_topic')(node.chipid()..'/upgrade', true) then
 			print('Received upgrade firmware request')
-			blocky.config.upgradeFimrware = true
+			blocky.config.upgradeFirmware = true
 			require('util_save_config')()
 			node.restart()
 		elseif topic == require('util_get_topic')(node.chipid()..'/log', true) then

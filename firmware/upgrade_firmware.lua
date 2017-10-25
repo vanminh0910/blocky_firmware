@@ -1,5 +1,5 @@
 listFiles = {
-  'blocky_connect.lua'
+  'blocky_connect.lua',
   'blocky_init.lua',
   'blocky_on_message.lua',
   'blocky_on_offline.lua',
@@ -18,7 +18,7 @@ listFiles = {
   'util_save_config.lua',
   'util-joinWifiList.lua',
   'wifiList.lua',
-  'world-thingspeak.lua',
+  'world-thingspeak.lua'
 }
 
 index = 1
@@ -38,11 +38,6 @@ function downloadFile()
     print('Failed to download file: ' .. 'http://www.getblocky.com/firmwares/latest/' .. listFiles[index])
     node.restart()
   end)
-
 end
 
-
-	
-
-
-
+downloadFile()

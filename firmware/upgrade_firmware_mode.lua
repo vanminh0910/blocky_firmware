@@ -1,9 +1,9 @@
 gpio.mode(4, gpio.OUTPUT)
 gpio.write(4, gpio.LOW)
 
-if blocky.config.upgradeFimrware then
-  blocky.config.upgradeFimrware = false
-  dofile('util_save_config.lua')
+if blocky.config.upgradeFirmware then
+  blocky.config.upgradeFirmware = false
+  require('util_save_config')()
 end
 
 -- Fast blink to let user know 

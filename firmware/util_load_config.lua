@@ -1,4 +1,3 @@
---utilPull(topic)
 local module  = ...
 
 return function ()	

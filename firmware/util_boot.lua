@@ -15,7 +15,12 @@ return function ()
 		dofile('config_mode_init.lua')
 	elseif blocky.config.upgradeFirmware == true then 
 		--trigger upgrade firmware mode
-		dofile('upgrade_firmware_mode.lua')
+		print('trigger upgrade firmware mode')
+		wifi.setmode(wifi.STATION)
+		wifi.eventmon.register(wifi.eventmon.STA_GOT_IP, function(T)
+			print("WIFI connected - IP: " .. T.IP)
+			dofile('upgrade_firmware_mode.lua')
+		end)		
 	else
 		wifi.setmode(wifi.STATION)
 		wifi.eventmon.register(wifi.eventmon.STA_GOT_IP, function(T)
