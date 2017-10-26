@@ -9,7 +9,7 @@ end
 
 if blocky.config.bootFlag then
   blocky.config.bootFlag = false
-  dofile('util_save_config.lua')
+  require('util_save_config')()
 end
 
 wifi.setmode(wifi.STATIONAP)

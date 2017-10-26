@@ -37,7 +37,7 @@ return function ()
 				if duration > 1000000 then
 					print('Config mode triggered')
 					blocky.config.bootFlag = true
-					dofile('util_save_config.lua')
+					require('util_save_config')()
 					node.restart()
 				end
 			end
@@ -64,9 +64,8 @@ return function ()
 		connectBlockyTimer = tmr.create()
 		connectBlockyTimer:alarm(40000, tmr.ALARM_SINGLE, function (t)
 			print('Fail to connect to wifi or server. Now enter setup mode.')
-			require('util-joinWifiList')
 			blocky.config.bootFlag = true
-			dofile('util_save_config.lua')
+			require('util_save_config')()
 			node.restart()
 		end)
 	end

@@ -9,7 +9,6 @@ return function ()
     file.writeline(json)
     file.flush()
     file.close()
-    print('Config saved')
     return true
   else
     print('Failed to save config')
