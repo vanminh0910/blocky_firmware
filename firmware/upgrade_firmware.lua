@@ -7,8 +7,6 @@ listFiles = {
   'config_mode_parse_args.lua',
   'index.html',
   'init.lua',
-  'main.lua',
-  'upgrade_firmware.lua',
   'upgrade_firmware_mode.lua',
   'util_boot.lua',
   'util_download_file.lua',
@@ -16,9 +14,7 @@ listFiles = {
   'util_load_config.lua',
   'util_on_connected.lua',
   'util_save_config.lua',
-  'util-joinWifiList.lua',
-  'wifiList.lua',
-  'world-thingspeak.lua'
+  'module_thingspeak.lua'
 }
 
 index = 1

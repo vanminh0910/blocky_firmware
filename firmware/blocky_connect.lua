@@ -1,5 +1,7 @@
 local module  = ...
 
+local firmwareVersion = '1.0'
+
 return function ()
 	package.loaded[module]=nil
 	module = nil
@@ -13,7 +15,7 @@ return function ()
 			end
 		end
 		local registerData = '{"event":"register", "chipId": "' .. node.chipid() 
-			.. '", "firmware": "1.0", "name":"' .. blocky.config.deviceName .. '", "modules": "'
+			.. '", "firmware": "' .. firmwareVersion .. '", "name":"' .. blocky.config.deviceName .. '", "modules": "'
 			.. modulesList ..  '", "type": "blocky_esp8266"}'
 		blocky.mqtt:publish(require('util_get_topic')('', true), registerData, 1, 0)
 		blocky.mqtt:subscribe(require('util_get_topic')(node.chipid()..'/#', true), 1, function()
