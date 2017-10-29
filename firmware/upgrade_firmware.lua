@@ -10,7 +10,6 @@ listFiles = {
   'upgrade_firmware_mode.lua',
   'util_boot.lua',
   'util_download_file.lua',
-  'util_get_topic.lua',
   'util_load_config.lua',
   'util_on_connected.lua',
   'util_save_config.lua',

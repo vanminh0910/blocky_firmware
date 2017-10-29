@@ -10,23 +10,24 @@ return function (conn, topic, data)
 		safeModeTimer = nil
 		collectgarbage()
 	end
-	local matchPattern = string.gsub(require('util_get_topic')('(.*)', false), '%-', '%%-')
+	local matchPattern = string.gsub(blocky.userTopicPrefix..'(.*)', '%-', '%%-')
 	if string.match(topic, matchPattern) then
 		local topicParsed = string.match(topic, matchPattern)
 		if topicParsed and blocky.messageHandlers[topicParsed] ~= nil then
 			pcall(function() blocky.messageHandlers[topicParsed](topicParsed, data) end)
 		end
 	else
-		matchPattern = string.gsub(require('util_get_topic')('', true), '%-', '%%-')
+		matchPattern = string.gsub(blocky.sysTopicPrefix, '%-', '%%-')
 		-- if receive system command
-		if topic == require('util_get_topic')(node.chipid()..'/run', true) or topic == require('util_get_topic')(node.chipid()..'/ota', true) then
-			matchPattern = string.gsub(require('util_get_topic')(node.chipid()..'/(.*)', true), '%-', '%%-')
+		if topic == blocky.sysTopicPrefix..node.chipid()..'/run' 
+			or topic == blocky.sysTopicPrefix..node.chipid()..'/ota' then
+			matchPattern = string.gsub(blocky.sysTopicPrefix..node.chipid()..'/(.*)', '%-', '%%-')
 			local topicParsed = string.match(topic, matchPattern)
 			if topicParsed == 'run' then
 				print('Received run request')
+				print(data)
 				local otaAckMsg = '{"chipId":"' .. node.chipid() .. '", "event":"run_ack"}';
-				blocky.mqtt:publish(require('util_get_topic')('', true), otaAckMsg, 0, 0, function() end)
-				node.input(data)
+				blocky.mqtt:publish(blocky.sysTopicPrefix, otaAckMsg, 0, 0, function() node.input(data) end)
 			elseif topicParsed == 'ota' then
 				print('Received ota request')
 				file.open('main_temp.lua', 'w')
@@ -38,7 +39,7 @@ return function (conn, topic, data)
 				--file.remove('main_temp.lua')
 				print('OTA completed. Rebooting now...')
 				local otaAckMsg = '{"chipId":"' .. node.chipid() .. '", "event":"ota_ack"}';
-				blocky.mqtt:publish(require('util_get_topic')('', true), otaAckMsg, 0, 0, function() 
+				blocky.mqtt:publish(blocky.sysTopicPrefix, otaAckMsg, 0, 0, function() 
 					node.restart()
 				end)
 			end        
@@ -63,7 +64,7 @@ return function (conn, topic, data)
 				file.remove('main_temp.lua')
 				--file.remove('main_temp.lc')
 				local otaAckMsg = '{"chipId":"' .. node.chipid() .. '", "event":"ota_ack"}';
-				blocky.mqtt:publish(require('util_get_topic')('', true), otaAckMsg, 0, 0, function()
+				blocky.mqtt:publish(blocky.sysTopicPrefix, otaAckMsg, 0, 0, function()
 					print('Published OTA ack')
 					node.restart()
 				end)
@@ -84,11 +85,11 @@ return function (conn, topic, data)
 				dofile('run_temp.lua')
 				file.remove('run_temp.lua')
 				local runAckMsg = '{"chipId":"' .. node.chipid() .. '", "event":"run_ack"}';
-				blocky.mqtt:publish(require('util_get_topic')('', true), runAckMsg, 0, 0, function()
+				blocky.mqtt:publish(blocky.sysTopicPrefix, runAckMsg, 0, 0, function()
 					print('Published run ack')
 				end)
 			end
-		elseif topic == require('util_get_topic')(node.chipid()..'/rename', true) then
+		elseif topic == blocky.sysTopicPrefix..node.chipid()..'/rename' then
 			print('Received rename request')
 			if data == nil or data == '' then
 				print('Invalid name')
@@ -96,17 +97,17 @@ return function (conn, topic, data)
 				blocky.config.deviceName = data
 				require('util_save_config')()
 			end     
-		elseif topic == require('util_get_topic')(node.chipid()..'/reboot', true) then
+		elseif topic == blocky.sysTopicPrefix..node.chipid()..'/reboot' then
 			print('Received reboot request')
 			node.restart()
-		elseif topic == require('util_get_topic')(node.chipid()..'/upload', true) then
+		elseif topic == blocky.sysTopicPrefix..node.chipid()..'/upload' then
 			print('Received upload request')
-		elseif topic == require('util_get_topic')(node.chipid()..'/upgrade', true) then
+		elseif topic == blocky.sysTopicPrefix..node.chipid()..'/upgrade' then
 			print('Received upgrade firmware request')
 			blocky.config.upgradeFirmware = true
 			require('util_save_config')()
 			node.restart()
-		elseif topic == require('util_get_topic')(node.chipid()..'/log', true) then
+		elseif topic == blocky.sysTopicPrefix..node.chipid()..'/log' then
 			return
 		else
 			print('Received invalid request')

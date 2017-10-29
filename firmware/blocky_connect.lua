@@ -14,11 +14,20 @@ return function ()
 				modulesList = filename .. ',' .. modulesList
 			end
 		end
+		print(modulesList)
 		local registerData = '{"event":"register", "chipId": "' .. node.chipid() 
 			.. '", "firmware": "' .. firmwareVersion .. '", "name":"' .. blocky.config.deviceName .. '", "modules": "'
 			.. modulesList ..  '", "type": "blocky_esp8266"}'
-		blocky.mqtt:publish(require('util_get_topic')('', true), registerData, 1, 0)
-		blocky.mqtt:subscribe(require('util_get_topic')(node.chipid()..'/#', true), 1, function()
+		blocky.mqtt:publish(blocky.sysTopicPrefix, registerData, 0, 0)
+		blocky.mqtt:subscribe(
+			{
+				[blocky.sysTopicPrefix..node.chipid()..'/ota/#']=0,
+				[blocky.sysTopicPrefix..node.chipid()..'/run/#']=0,
+				[blocky.sysTopicPrefix..node.chipid()..'/rename']=0,
+				[blocky.sysTopicPrefix..node.chipid()..'/reboot']=0,
+				[blocky.sysTopicPrefix..node.chipid()..'/upload']=0,
+				[blocky.sysTopicPrefix..node.chipid()..'/upgrade']=0
+			}, function()
 			require('util_on_connected')()
 			if (blocky.status == 0) then
 				blocky.status = 1

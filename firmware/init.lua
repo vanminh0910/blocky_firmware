@@ -1,5 +1,2 @@
-
-if require("util_boot")() then 
-	--run user code
-	dofile ("main.lua")	
-end
+--node.egc.setmode(node.egc.ON_ALLOC_FAILURE)
+require("util_boot")()
