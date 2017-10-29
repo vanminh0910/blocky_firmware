@@ -100,7 +100,7 @@ wifi.sta.connect()
 
 wifi.eventmon.register(wifi.eventmon.STA_GOT_IP, function(T)
 	print("WIFI connected - IP: " .. T.IP)
-	print(">>>>>>>>>Installing Blocky<<<<<<<")
+	print("Installing Blocky")
 	installBlocky()
 	
 end)	
