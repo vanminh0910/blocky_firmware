@@ -1,8 +1,12 @@
 
-WIFI_SSID = "Meo Bu's home"
-WIFI_PASSWORD = "bebapbegau"
-BLOCKY_AUTHKEY = "BkguahNpb"
+WIFI_SSID = "Your Wifi Access Point"
+WIFI_PASSWORD = "Your Wifi Password"
+BLOCKY_AUTHKEY = "Your AuthKey. Open your profile at play.getblocky.com"
 
+--This code will format your Flash and install Blocky firmware needed to do your first IoT project.
+-- A heartful welcome from Blocky Team , have fun and be creative !
+
+file.format()
 
 
 wifi_ap={}
