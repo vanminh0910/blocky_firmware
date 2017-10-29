@@ -45,50 +45,50 @@ listFiles = {
 
 function installBlocky()
 
-	index = 1
+    index = 1
 
-	function downloadFileList()
-		downloadFile('http://www.getblocky.com/firmwares/latest/' .. listFiles[index],
-		listFiles[index], function()  
-			index = index + 1
-			if index > table.getn(listFiles) then
-			  print('Upgrade firmware done. Now reboot.')
-			  node.restart()
-			else
-			  downloadFileList()
-			end
-		  end,
-		  function() 
-			print('Failed to download file: ' .. 'http://www.getblocky.com/firmwares/latest/' .. listFiles[index])
-			--node.restart()
-			
-		  end)
-	end
-	function downloadFile(url, fileName, onCompleted, onError)
-			tmr.delay(1000000)
-			print('Downloading: ' .. fileName .. ' from ' .. url)
-			print(node.heap())
-			http.get(url, nil, function(code, data)      
-			if (code ~= 200) then
-			  if (onError) then
-				onError()
-				collectgarbage()
-			  end
-			  return
-			end    
-			local fd = file.open(fileName, "w+"); fd:write(data); fd:flush() ; fd:close()  
-			collectgarbage()
-			print('Download completed')
-			if (onCompleted) then
-			  onCompleted()
-			end
-		  end)
-	end
-		
-		
-		
-	file.remove('config')
-	downloadFileList()
+    function downloadFileList()
+        downloadFile('http://www.getblocky.com/firmwares/latest/' .. listFiles[index],
+        listFiles[index], function()  
+            index = index + 1
+            if index > table.getn(listFiles) then
+              print('Upgrade firmware done. Now reboot.')
+              node.restart()
+            else
+              downloadFileList()
+            end
+          end,
+          function() 
+            print('Failed to download file: ' .. 'http://www.getblocky.com/firmwares/latest/' .. listFiles[index])
+            --node.restart()
+            
+          end)
+    end
+    function downloadFile(url, fileName, onCompleted, onError)
+            
+            print('Downloading: ' .. fileName .. ' from ' .. url)
+        
+            http.get(url, nil, function(code, data)      
+            if (code ~= 200) then
+              if (onError) then
+                onError()
+                collectgarbage()
+              end
+              return
+            end    
+            local fd = file.open(fileName, "w+"); fd:write(data); fd:flush() ; fd:close()  
+            collectgarbage()
+            print('Download completed')
+            if (onCompleted) then
+              onCompleted()
+            end
+          end)
+    end
+        
+        
+        
+    file.remove('config')
+    downloadFileList()
 
 
 end
@@ -96,11 +96,16 @@ end
 
 wifi.setmode(wifi.STATION)
 wifi.sta.config(wifi_ap)
-wifi.sta.connect()
+
 
 wifi.eventmon.register(wifi.eventmon.STA_GOT_IP, function(T)
-	print("WIFI connected - IP: " .. T.IP)
-	print("Installing Blocky")
-	installBlocky()
-	
-end)	
+    print("WIFI connected - IP: " .. T.IP)
+    print("Installing Blocky")
+    tmr.delay(2000000)
+    installBlocky()
+    userConfig = '{"authKey":"' .. BLOCKY_AUTHKEY .. '","deviceName":""}'
+
+    local fd = file.open('config', "w+"); fd:write(userConfig); fd:flush() ; fd:close()  
+end)
+
+wifi.sta.connect()
