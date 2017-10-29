@@ -44,24 +44,6 @@ listFiles = {
 }
 
 function installBlocky()
-	listFiles = {
-  'blocky_connect.lua',
-  'blocky_init.lua',
-  'blocky_on_message.lua',
-  'blocky_on_offline.lua',
-  'config_mode_init.lua',
-  'config_mode_parse_args.lua',
-  'index.html',
-  'init.lua',
-  'upgrade_firmware_mode.lua',
-  'util_boot.lua',
-  'util_download_file.lua',
-  'util_get_topic.lua',
-  'util_load_config.lua',
-  'util_on_connected.lua',
-  'util_save_config.lua',
-  'module_thingspeak.lua'
-}
 
 	index = 1
 
